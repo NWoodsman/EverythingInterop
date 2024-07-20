@@ -170,17 +170,16 @@ public static class Everything
     [DllImport("Everything64.dll")]
     public static extern UInt32 Everything_IncRunCountFromFileName(string lpFileName);
 
-    #endregion
+	#endregion
 
 
-	/// <para>Search the host computer for matching files given a string and an optional length.</para>
+	/// <summary>
+	/// <para>Search the host computer for matching files given a search string and an optional length.</para>
 	/// <para>Note that the host computer must already be running an instance of Everything.</para>
-	/// 
 	/// </summary>
-	/// <param name="query">The string to search.</param>
-	/// <param name="length">The desired length of the string. Default is 999 characters.</param>
+	/// <param name="query">The string to search for</param>
 	/// <returns>A lazy number of matches that will not be resolved until iteration.</returns>
-	public static IEnumerable<Result> Search(string query, int length = 999) 
+	public static IEnumerable<Result> Search(string query) 
     {
         // set the search
         Everything_SetSearchW(query);
@@ -193,7 +192,7 @@ public static class Everything
         // loop through the results, generating result objects
         for (uint i = 0; i < resultCount; i++)
         {
-			char[] buf = ArrayPool<char>.Shared.Rent(length + 1); // add one for null terminator
+			char[] buf = ArrayPool<char>.Shared.Rent(260); // 260 is the max Windows file path length, including the null terminator. 
             Everything_GetResultFullPathName(i, buf, (uint)buf.Length);
             Everything_GetResultDateModified(i, out long date_modified);
             Everything_GetResultSize(i, out long size);
